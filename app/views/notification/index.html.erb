@@ -1,0 +1,13 @@
+<h1>Push Notification codelab</h1>
+<p>This page must be accessed using HTTPS or via localhost.</p>
+
+<!-- a view -->
+<button class="js-push-button">Send a message</button>
+
+<script type="text/javascript">
+  (function() {
+    $('.js-push-button').on("click", function onClick() {
+      $.post("<%= push_path %>");
+    });
+  })();
+</script>

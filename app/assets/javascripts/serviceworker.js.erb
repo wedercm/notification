@@ -1,0 +1,44 @@
+function onPush(event) {
+  var messagem = event.data.json();
+  let title = messagem.title || "Maha Messagem";
+  let body = messagem.body;
+  let tag = "push-simple-demo-notification-tag";
+  var icon = " <%= asset_path 'loader.gif' %>";
+
+  event.waitUntil(
+    self.registration.showNotification(messagem.title, { body, icon, tag })
+  )
+}
+
+console.log('Started', self);
+self.addEventListener('install', function(event) {
+  self.skipWaiting();
+  console.log('Installed', event);
+});
+self.addEventListener('activate', function(event) {
+  console.log('Activated', event);
+});
+
+self.addEventListener("push", onPush);
+
+self.addEventListener('notificationclick', function(event) {
+    console.log('Notification click: tag ', event.notification.tag);
+    event.notification.close();
+    var url = 'https://www.mahagestao.com.br';
+    event.waitUntil(
+        clients.matchAll({
+            type: 'window'
+        })
+        .then(function(windowClients) {
+            for (var i = 0; i < windowClients.length; i++) {
+                var client = windowClients[i];
+                if (client.url === url && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(url);
+            }
+        })
+    );
+});

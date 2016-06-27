@@ -1,0 +1,13 @@
+{
+  "name": "Maha Notification",
+  "short_name": "Notification",
+  "icons": [{
+    "src": "/assets/images/loader.gif",
+    "sizes": "192x192",
+    "type": "image/gif"
+  }],
+  "start_url": "/",
+  "display": "standalone",
+  "gcm_sender_id": "984093866218",
+  "gcm_user_visible_only": true
+}
