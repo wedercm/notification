@@ -1,16 +1,81 @@
-// Place all the behaviors and hooks related to the matching controller here.
-// All this logic will automatically be available in application.js.
+var reg;
+var subscription;
+var isSubscribed = false;
+// var subscribeButton = document.querySelector('button');
+
+// if ('serviceWorker' in navigator) {
+//   console.log('Service Worker is supported');
+//   navigator.serviceWorker.register("<%= asset_path 'serviceworker.js' %>").then(function() {
+//     return navigator.serviceWorker.ready;
+//   }).then(function(serviceWorkerRegistration) {
+//     reg = serviceWorkerRegistration;
+//     subscribe();
+//     // subscribeButton.disabled = false;
+//     console.log('Service Worker is ready :^)', reg);
+//   }).catch(function(error) {
+//     console.log('Service Worker Error :^(', error);
+//   });
+// }
 if ('serviceWorker' in navigator) {
   console.log('Service Worker is supported');
   navigator.serviceWorker.register("<%= asset_path 'serviceworker.js' %>")
-    .then(function(reg) {
-      console.log('Successfully registered!', ':^)', reg);
-      reg.pushManager.subscribe({ userVisibleOnly: true })
-        .then(function(subscription) {
-          console.log('endpoint:', subscription.endpoint);
-        $.post("/subscribe", { subscription: subscription.toJSON() });
-      });
+    .then(function(reg1) {
+      console.log('Successfully registered!');
+      reg = reg1;
   }).catch(function(error) {
-    console.log('Registration failed', ':^(', error);
+    console.log('Registration failed');
+  });
+}
+// subscribeButton.addEventListener('click', function() {
+//   if (isSubscribed) {
+//     unsubscribe();
+//   } else {
+//     subscribe();
+//   }
+// });
+
+function disabilitaBotao(){
+
+  // Are Notifications supported in the service worker?  
+  if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
+    return true;
+  }
+
+  // Check the current Notification permission.  
+  // If its denied, it's a permanent block until the  
+  // user changes the permission  
+  if (Notification.permission === 'denied') {
+    return true;
+  }
+
+  // Check if push messaging is supported  
+  if (!('PushManager' in window)) {
+    return true;
+  }
+  return false;
+}
+
+function subscribe() {
+  console.log("Entrou subscribe");
+  reg.pushManager.subscribe({userVisibleOnly: true}).
+  then(function(pushSubscription){
+    subscription = pushSubscription;
+    console.log('Subscribed! Endpoint:', subscription.endpoint);
+    $.post("/subscribe", { subscription: subscription.toJSON() });
+
+    // subscribeButton.textContent = 'Unsubscribe';
+    isSubscribed = true;
+  });
+}
+
+function unsubscribe() {
+  console.log("Entrou unsubscribe");
+  subscription.unsubscribe().then(function(event) {
+    // subscribeButton.textContent = 'Subscribe';
+    console.log('Unsubscribed!', event);
+    isSubscribed = false;
+  }).catch(function(error) {
+    console.log('Error unsubscribing', error);
+    // subscribeButton.textContent = 'Subscribe';
   });
 }
